@@ -99,7 +99,7 @@ namespace MonsterTradingCardsGame
                 if (hashed == (string)dbPassowrd)
                 {
                     Close();
-                    GetUserInfo(username);
+                    GetUserInfo();
                     return true;
                 }
             }
@@ -107,11 +107,11 @@ namespace MonsterTradingCardsGame
             return false;
         }
 
-        public void GetUserInfo(string username)
+        public void GetUserInfo()
         {
             Open();
             NpgsqlCommand cmd = new NpgsqlCommand("SELECT username, elo, coins, played_games FROM player WHERE username = @username;", _conn);
-            cmd.Parameters.AddWithValue("username", username);
+            cmd.Parameters.AddWithValue("username", User.username);
             NpgsqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
@@ -128,8 +128,8 @@ namespace MonsterTradingCardsGame
             Card.ELEMENT_TYPE element;
 
             Open();
-            NpgsqlCommand command = new NpgsqlCommand("SELECT * FROM card", _conn);
-            NpgsqlDataReader reader = command.ExecuteReader();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM card;", _conn);
+            NpgsqlDataReader reader = cmd.ExecuteReader();
             while (reader.Read())
             {
                 if (reader[3].ToString() == "normal")
@@ -144,11 +144,20 @@ namespace MonsterTradingCardsGame
                 else
                     type = Card.CARD_TYPE.Spell;
 
-                Stack.cardList.Add(new Card((int)reader[0], reader[1].ToString(), (int)reader[2], element, type)); // as an example 
+                Stack.cardList.Add(new Card((int)reader[0], reader[1].ToString(), (int)reader[2], element, type));
             }
             Close();
         }
-
+        public void GetAllUserCards()
+        {
+            Open();
+            NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM card WHERE card.id IN (SELECT cardstack.id FROM cardstack WHERE cardstack.username = @username);", _conn);
+            cmd.Parameters.AddWithValue("username", User.username);
+            NpgsqlDataReader reader = cmd.ExecuteReader();
+            while (reader.Read())
+                Stack.userCards.Add(Stack.cardList[(int)reader[0]]);
+            Close();
+        }
         public void UpdatePlayedGames()
         {
             if (AuthToken.checkToken())
@@ -201,16 +210,13 @@ namespace MonsterTradingCardsGame
             Open();
             NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO cardstack (id, username) VALUES (@id,@username);", _conn);
             cmd.Parameters.AddWithValue("id", id);
-            cmd.Parameters.AddWithValue("username", "Terry");
+            cmd.Parameters.AddWithValue("username", User.username);
             Object res = cmd.ExecuteScalar();
             Close();
         }
         public void GetPackage()
         {
-            Card.CARD_TYPE type;
-            Card.ELEMENT_TYPE element;
             Random random = new Random();
-
             for (int i = 0; i < 4; i++)
             {
                 Open();

@@ -14,10 +14,8 @@ namespace MonsterTradingCardsGame
         static void Main(string[] args)
         {
             //Farbiger Game Titel
-            /*AsciiText();
-            StartMenu();*/
-
-            Database.GetConn().GetPackage();
+            AsciiText();
+            StartMenu();
         }
         static void StartMenu()
         {
@@ -38,6 +36,8 @@ namespace MonsterTradingCardsGame
             {
                 if (user.RegisterUser())
                     GameMenu();
+                else
+                    StartMenu();
             }
             if (c == 3)
             {
@@ -49,8 +49,9 @@ namespace MonsterTradingCardsGame
         static void GameMenu()
         {
             int c;
-            Battle battle = new Battle();
-            Database.GetConn().GetUserInfo(User.username);
+            Database.GetConn().GetUserInfo();
+            Database.GetConn().GetAllCards();
+            Database.GetConn().GetAllUserCards();
             Console.WriteLine($"\n===================================================", Color.Blue);
             Console.WriteLine($"User: {User.username} | ELO: {User.elo} | Coins: {User.coins} | Played Games: {User.playedGames}", Color.Blue);
             Console.WriteLine($"===================================================", Color.Blue);
@@ -61,10 +62,13 @@ namespace MonsterTradingCardsGame
             switch (c)
             {
                 case 1:
+                    Battle battle = new Battle();
                     battle.StartBattle();
                     GameMenu();
                     break;
                 case 2:
+                    Package.BuyPackage();
+                    GameMenu();
                     break;
                 case 3:
                     break;

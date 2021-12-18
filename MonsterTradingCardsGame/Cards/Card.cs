@@ -29,7 +29,7 @@ namespace MonsterTradingCardsGame
 
         public void PrintCard()
         {
-            string printthis = String.Format("|{0,-3}|{1,-12}|{2,-3}|{3,-7}|{4,-7}|", id, name, damage, etype, ctype);
+            string printthis = String.Format("|{0,-3}|{1,-12}|{2,-6}|{3,-7}|{4,-7}|", id, name, damage, etype, ctype);
             Console.WriteLine(printthis);
         }
 

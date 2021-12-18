@@ -21,21 +21,15 @@ namespace MonsterTradingCardsGame
         private Card.ELEMENT_TYPE fire = Card.ELEMENT_TYPE.Fire;
         public Battle()
         {
-            Database.GetConn().GetAllCards();
-            botDeck[0] = Stack.cardList[7];
-            botDeck[1] = Stack.cardList[8];
-            botDeck[2] = Stack.cardList[10];
-            botDeck[3] = Stack.cardList[25];
-
             //Bot choosing random Cards for Component
-            /*for (int i = 0; i < deckSize; i++)
+            for (int i = 0; i < deckSize; i++)
             {
                 int choiceBot = RandomCard(9);
                 while (botDeck.Contains(Stack.cardList[choiceBot]))
                     choiceBot = RandomCard(9);
 
                 botDeck[i] = Stack.cardList[choiceBot];
-            }*/
+            }
         }
         public void ChooseCards()
         {
@@ -52,7 +46,7 @@ namespace MonsterTradingCardsGame
                     Console.ResetColor();
                     input = Console.ReadLine();
                 }
-                userDeck[i] = Stack.cardList[choice];
+                userDeck[i] = Stack.cardList.Find(x => x.id == choice);
             }
         }
         public void PrintDeck()
@@ -89,6 +83,8 @@ namespace MonsterTradingCardsGame
             }
             PrintDeck();
             Database.GetConn().UpdatePlayedGames();
+            userDeck.Clear();
+            botDeck.Clear();
         }
         private void Specialties(int x, int y)
         {

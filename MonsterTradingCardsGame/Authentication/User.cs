@@ -34,7 +34,6 @@ namespace MonsterTradingCardsGame
                 containsLetter = Regex.IsMatch(password, "[a-zA-Z0-9]");
                 if (!containsLetter || password.Length < 7)
                     Console.WriteLine("Password must contain at leat\n a capital letter\n a small letter\n a number and be at least 7 Letters, try again");
-
             }
             elo = 100;
             coins = 20;
