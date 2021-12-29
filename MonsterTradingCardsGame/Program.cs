@@ -49,16 +49,18 @@ namespace MonsterTradingCardsGame
         static void GameMenu()
         {
             int c;
-            Database.GetConn().GetUserInfo();
-            Database.GetConn().GetAllCards();
-            Database.GetConn().GetAllUserCards();
-            Console.WriteLine($"\n===================================================", Color.Blue);
-            Console.WriteLine($"User: {User.username} | ELO: {User.elo} | Coins: {User.coins} | Played Games: {User.playedGames}", Color.Blue);
-            Console.WriteLine($"===================================================", Color.Blue);
+            Stack.userCards.Clear();
+            var conn = Database.GetConn();
+            conn.GetUserInfo();
+            conn.GetAllCards();
+            conn.GetUserCards();
+            Console.WriteLine($"\n=====================================================", Color.LightBlue);
+            Console.WriteLine($"User: {User.username} | ELO: {User.elo} | Coins: {User.coins} | Played Games: {User.playedGames}", Color.LightBlue);
+            Console.WriteLine($"=====================================================", Color.LightBlue);
             Console.WriteLine($"\nGame Menu");
             Console.WriteLine("Please choose by entering a number:");
-            Console.WriteLine("1.Play a Round\n2.Buy a Package\n3.Trade\n4.Logout\n5.Quit Game");
-            c = CheckInput(1, 5);
+            Console.WriteLine("1.Play a Round\n2.Buy a Package\n3.Trade\n4.Logout\n5.My Cards\n6.Quit Game");
+            c = CheckInput(1, 6);
             switch (c)
             {
                 case 1:
@@ -71,11 +73,17 @@ namespace MonsterTradingCardsGame
                     GameMenu();
                     break;
                 case 3:
+                    Trade.TradeMenu();
+                    GameMenu();
                     break;
                 case 4:
                     StartMenu();
                     break;
                 case 5:
+                    Stack.PrintStack();
+                    GameMenu();
+                    break;
+                case 6:
                     return;
                 default:
                     break;

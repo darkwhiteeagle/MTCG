@@ -19,6 +19,11 @@ namespace MonsterTradingCardsGame
         private Card.ELEMENT_TYPE normal = Card.ELEMENT_TYPE.Normal;
         private Card.ELEMENT_TYPE water = Card.ELEMENT_TYPE.Water;
         private Card.ELEMENT_TYPE fire = Card.ELEMENT_TYPE.Fire;
+        ~Battle()
+        {
+            userDeck.Clear();
+            botDeck.Clear();
+        }
         public Battle()
         {
             //Bot choosing random Cards for Component
@@ -49,7 +54,7 @@ namespace MonsterTradingCardsGame
                 userDeck[i] = Stack.cardList.Find(x => x.id == choice);
             }
         }
-        public void PrintDeck()
+        public void PrintDecks()
         {
             Console.WriteLine("\nYour Deck:");
             foreach (Card card in userDeck)
@@ -68,7 +73,7 @@ namespace MonsterTradingCardsGame
         {
             Stack.PrintStack();
             ChooseCards();
-            PrintDeck();
+            PrintDecks();
             Console.WriteLine();
             for (int i = 0; i <= maxRounds; i++)             //maxRound
             {
@@ -81,10 +86,9 @@ namespace MonsterTradingCardsGame
                 Specialties(x, y);
                 if (CountCards(i)) break;
             }
-            PrintDeck();
+            PrintDecks();
             Database.GetConn().UpdatePlayedGames();
-            userDeck.Clear();
-            botDeck.Clear();
+
         }
         private void Specialties(int x, int y)
         {
@@ -131,12 +135,14 @@ namespace MonsterTradingCardsGame
             Console.WriteLine($"{xDamage} VS {yDamage}");
             if (xDamage > yDamage)
             {
+                Database.GetConn().InsertCard(botDeck[y].id);
                 userDeck.Add(botDeck[y]);
                 botDeck.Remove(botDeck[y]);
                 Console.WriteLine("You won this round : Card added to your Deck");
             }
             else if (xDamage < yDamage)
             {
+                Database.GetConn().DeleteCard(userDeck[x].id);
                 botDeck.Add(userDeck[x]);
                 userDeck.Remove(userDeck[x]);
                 Console.WriteLine("You lost this round : Card transfered to Opponent");

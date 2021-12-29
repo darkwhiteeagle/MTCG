@@ -35,5 +35,6 @@ namespace MonsterTradingCardsGame
                 return true;
             }
         }
+
     }
 }
