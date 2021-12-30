@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MonsterTradingCardsGame
-{
-    class Package
-    {
+namespace MonsterTradingCardsGame {
+    class Package {
         public Package() { }
 
-        public static void BuyPackage()
-        {
+        public static void BuyPackage() {
             char chr;
             Console.WriteLine("One package includes 4 random cards and costs 5 coins.\n" +
                 "Are you sure you want to purchase it? (y/n)");

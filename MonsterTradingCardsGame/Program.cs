@@ -6,19 +6,15 @@ using Colorful;
 using System.Drawing;
 using Console = Colorful.Console;
 
-namespace MonsterTradingCardsGame
-{
-    class Program
-    {
+namespace MonsterTradingCardsGame {
+    class Program {
 
-        static void Main(string[] args)
-        {
+        static void Main(string[] args) {
             //Farbiger Game Titel
             AsciiText();
             StartMenu();
         }
-        static void StartMenu()
-        {
+        static void StartMenu() {
             User user = new User();
             int c;
             Console.WriteLine("Please choose by entering a number:");
@@ -46,8 +42,7 @@ namespace MonsterTradingCardsGame
 
         }
 
-        static void GameMenu()
-        {
+        static void GameMenu() {
             int c;
             Stack.userCards.Clear();
             var conn = Database.GetConn();
@@ -59,8 +54,9 @@ namespace MonsterTradingCardsGame
             Console.WriteLine($"=====================================================", Color.LightBlue);
             Console.WriteLine($"\nGame Menu");
             Console.WriteLine("Please choose by entering a number:");
-            Console.WriteLine("1.Play a Round\n2.Buy a Package\n3.Trade\n4.Logout\n5.My Cards\n6.Quit Game");
+            Console.WriteLine("1.Play a Round\n2.Buy a Package\n3.Trade\n4.My Cards\n5.Logout\n6.Quit Game");
             c = CheckInput(1, 6);
+            Console.Clear();
             switch (c)
             {
                 case 1:
@@ -77,21 +73,21 @@ namespace MonsterTradingCardsGame
                     GameMenu();
                     break;
                 case 4:
-                    StartMenu();
-                    break;
-                case 5:
                     Stack.PrintStack();
                     GameMenu();
                     break;
+                case 5:
+                    User.LogoutUser();
+                    StartMenu();
+                    break;
                 case 6:
+                    User.LogoutUser();
                     return;
                 default:
                     break;
             }
-
         }
-        static int CheckInput(int min, int max)
-        {
+        static int CheckInput(int min, int max) {
             string input = Console.ReadLine();
             int c;
             while (!Int32.TryParse(input, out c) || c < min || c > max)
@@ -101,8 +97,7 @@ namespace MonsterTradingCardsGame
             }
             return c;
         }
-        static void AsciiText()
-        {
+        static void AsciiText() {
             Console.WriteAscii("Monster Trading", Color.FromArgb(67, 144, 198));
             Console.WriteAscii("  Cards Game", Color.FromArgb(131, 184, 214));
             Console.WriteLine();
