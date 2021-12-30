@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 
+using Colorful;
+using System.Drawing;
+using Console = Colorful.Console;
 
-namespace MonsterTradingCardsGame
-{
-    class Battle
-    {
+namespace MonsterTradingCardsGame {
+    class Battle {
 
         public List<Card> userDeck = new List<Card>(new Card[4]);
         public List<Card> botDeck = new List<Card>(new Card[4]);
@@ -19,44 +20,38 @@ namespace MonsterTradingCardsGame
         private Card.ELEMENT_TYPE normal = Card.ELEMENT_TYPE.Normal;
         private Card.ELEMENT_TYPE water = Card.ELEMENT_TYPE.Water;
         private Card.ELEMENT_TYPE fire = Card.ELEMENT_TYPE.Fire;
-        public Battle()
-        {
-            Database.GetConn().GetAllCards();
-            botDeck[0] = Stack.cardList[7];
-            botDeck[1] = Stack.cardList[8];
-            botDeck[2] = Stack.cardList[10];
-            botDeck[3] = Stack.cardList[25];
-
+        ~Battle() {
+            userDeck.Clear();
+            botDeck.Clear();
+        }
+        public Battle() {
             //Bot choosing random Cards for Component
-            /*for (int i = 0; i < deckSize; i++)
+            for (int i = 0; i < deckSize; i++)
             {
                 int choiceBot = RandomCard(9);
                 while (botDeck.Contains(Stack.cardList[choiceBot]))
                     choiceBot = RandomCard(9);
 
                 botDeck[i] = Stack.cardList[choiceBot];
-            }*/
+            }
         }
-        public void ChooseCards()
-        {
+        public void ChooseCards() {
             int choice;
             string[] count = new string[] { "first", "second", "third", "fourth" };
             for (int i = 0; i < deckSize; i++)
             {
                 Console.WriteLine($"\nPlease choose your {count[i]} Card ");
-                string input = Console.ReadLine();
-                while (!Int32.TryParse(input, out choice) || choice < 0 || choice >= Stack.stackSize || userDeck.Contains(Stack.cardList[choice]))
+                string input = Console.ReadLine(); //   || choice < 0 || choice >= Stack.stackSize
+                while (!Int32.TryParse(input, out choice) || !Stack.userCards.Contains(Stack.cardList.Find(x => x.id == choice)))
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Please choose a valid Cardnumber!");
-                    Console.ResetColor();
+                    Console.WriteLine("Please choose a valid Cardnumber!", Color.Red);
                     input = Console.ReadLine();
                 }
-                userDeck[i] = Stack.cardList[choice];
+                userDeck[i] = Stack.userCards.Find(x => x.id == choice);
+                Stack.userCards.Remove(userDeck[i]);
             }
         }
-        public void PrintDeck()
-        {
+        public void PrintDecks() {
             Console.WriteLine("\nYour Deck:");
             foreach (Card card in userDeck)
             {
@@ -70,77 +65,78 @@ namespace MonsterTradingCardsGame
             }
         }
 
-        public void StartBattle()
-        {
-            Stack.PrintStack();
-            ChooseCards();
-            PrintDeck();
-            Console.WriteLine();
-            for (int i = 0; i <= maxRounds; i++)             //maxRound
+        public void StartBattle() {
+            if (Stack.userCards.Count > 3)
             {
-                int x = RandomCard(userDeck.Count);
-                int y = RandomCard(botDeck.Count);
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine($"Round {i}:");
-                Console.ResetColor();
-                Console.WriteLine($"{userDeck[x].name}({userDeck[x].damage}) vs {botDeck[y].name}({botDeck[y].damage}) ");
-                Specialties(x, y);
-                if (CountCards(i)) break;
+                Stack.PrintStack();
+                ChooseCards();
+                PrintDecks();
+                Console.WriteLine();
+                for (int i = 0; i <= maxRounds; i++)             //maxRound
+                {
+                    int x = RandomCard(userDeck.Count);
+                    int y = RandomCard(botDeck.Count);
+                    Console.WriteLine($"Round {i}:", Color.DarkGray);
+                    Console.WriteLine($"{userDeck[x].name}({userDeck[x].damage}) vs {botDeck[y].name}({botDeck[y].damage}) ");
+                    Specialties(x, y);
+                    if (CountCards(i)) break;
+                }
+                PrintDecks();
+                Database.GetConn().UpdatePlayedGames();
             }
-            PrintDeck();
-            Database.GetConn().UpdatePlayedGames();
+            else
+            {
+                Console.WriteLine("You have to have at least 4 cards to play", Color.DarkRed);
+            }
         }
-        private void Specialties(int x, int y)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
+        private void Specialties(int x, int y) {
             if ((userDeck[x].name == "Goblin" && botDeck[y].name == "Dragon") ||
                 (userDeck[x].name == "Dragon" && botDeck[y].name == "Goblin"))
             {
-                Console.WriteLine("Goblins are too afraid of Dragons to attack");
+                Console.WriteLine("Goblins are too afraid of Dragons to attack", Color.Yellow);
             }
             else if ((userDeck[x].name == "Ork" && botDeck[y].name == "Wizzard") ||
                 (userDeck[x].name == "Wizzard" && botDeck[y].name == "Ork"))
             {
-                Console.WriteLine("Wizzard can control Orks so they are not able to damage them");
+                Console.WriteLine("Wizzard can control Orks so they are not able to damage them", Color.Yellow);
             }
             else if ((userDeck[x].name == "WaterSpell" && botDeck[y].name == "Knight") ||
                 (userDeck[x].name == "Knight" && botDeck[y].name == "WaterSpell"))
             {
                 userDeck.Add(botDeck[y]);
                 botDeck.Remove(botDeck[y]);
-                Console.WriteLine("The armor of Knights is so heavy that WaterSpells make them drown them instantly");
+                Console.WriteLine("The armor of Knights is so heavy that WaterSpells make them drown them instantly", Color.Yellow);
             }
             else if ((userDeck[x].ctype.Equals(spell) && botDeck[y].name == "Kraken") ||
                 (botDeck[y].ctype.Equals(spell) && userDeck[x].name == "Kraken"))
             {
-                Console.WriteLine("The Kraken is immune against spells");
+                Console.WriteLine("The Kraken is immune against spells", Color.Yellow);
             }
             else if ((userDeck[x].name == "Dragon" && botDeck[y].name == "FireElve") ||
                 (userDeck[x].name == "FireElve" && botDeck[y].name == "Dragon"))
             {
-                Console.WriteLine("The FireElves know Dragons since they were little and can evade their attacks");
+                Console.WriteLine("The FireElves know Dragons since they were little and can evade their attacks", Color.Yellow);
             }
             else
             {
-                Console.ResetColor();
                 if (userDeck[x].ctype.Equals(monster) && botDeck[y].ctype.Equals(monster))
                     CompareDamage(x, y, userDeck[x].damage, botDeck[y].damage);
                 else
                     CompareElemntType(x, y);
             }
-            Console.ResetColor();
         }
-        private void CompareDamage(int x, int y, int xDamage, int yDamage)
-        {
+        private void CompareDamage(int x, int y, int xDamage, int yDamage) {
             Console.WriteLine($"{xDamage} VS {yDamage}");
             if (xDamage > yDamage)
             {
+                Database.GetConn().InsertCard(botDeck[y].id);
                 userDeck.Add(botDeck[y]);
                 botDeck.Remove(botDeck[y]);
                 Console.WriteLine("You won this round : Card added to your Deck");
             }
             else if (xDamage < yDamage)
             {
+                Database.GetConn().DeleteCard(userDeck[x].id);
                 botDeck.Add(userDeck[x]);
                 userDeck.Remove(userDeck[x]);
                 Console.WriteLine("You lost this round : Card transfered to Opponent");
@@ -150,8 +146,7 @@ namespace MonsterTradingCardsGame
                 Console.WriteLine("Both Card Damage are equal : No changes");
             }
         }
-        private void CompareElemntType(int x, int y)
-        {
+        private void CompareElemntType(int x, int y) {
             int[] arr = new int[2];
 
             //water VS fire, fire VS normal, normal VS water
@@ -192,34 +187,26 @@ namespace MonsterTradingCardsGame
             return xy;
         }
 
-        private int RandomCard(int curSize)
-        {
+        private int RandomCard(int curSize) {
             Random rnd = new Random();
             return rnd.Next(0, curSize);
         }
 
-        private bool CountCards(int i)
-        {
+        private bool CountCards(int i) {
             if (((userDeck.Count < botDeck.Count) && i > 99) || userDeck.Count == 0)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\nYou lose this game");
-                Console.ResetColor();
+                Console.WriteLine("\nYou lose this game", Color.Red);
                 Database.GetConn().UpdateElo(-5);
                 return true;
             }
             if ((userDeck.Count == botDeck.Count) && i > 99)
             {
-                Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.WriteLine("\nThis round is a tie");
-                Console.ResetColor();
+                Console.WriteLine("\nThis round is a tie", Color.DarkOrange);
                 return true;
             }
             if (((userDeck.Count > botDeck.Count) && i > 99) || botDeck.Count == 0)
             {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("\nYou won this game");
-                Console.ResetColor();
+                Console.WriteLine("\nYou won this game", Color.Green);
                 Database.GetConn().UpdateElo(3);
                 return true;
             }

@@ -2660,11 +2660,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Taha\\Computer Science\\3.Semester\\SWE\\MonsterTradingCardsGame\\MonsterTradingCardsGame\\MonsterTradingCardsGame.csproj",
+      "projectUniqueName": "C:\\Taha\\Computer Science\\3.Semester\\SWE\\MTCG\\MonsterTradingCardsGame\\MonsterTradingCardsGame.csproj",
       "projectName": "MonsterTradingCardsGame",
-      "projectPath": "C:\\Taha\\Computer Science\\3.Semester\\SWE\\MonsterTradingCardsGame\\MonsterTradingCardsGame\\MonsterTradingCardsGame.csproj",
+      "projectPath": "C:\\Taha\\Computer Science\\3.Semester\\SWE\\MTCG\\MonsterTradingCardsGame\\MonsterTradingCardsGame.csproj",
       "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Taha\\Computer Science\\3.Semester\\SWE\\MonsterTradingCardsGame\\MonsterTradingCardsGame\\obj\\",
+      "outputPath": "C:\\Taha\\Computer Science\\3.Semester\\SWE\\MTCG\\MonsterTradingCardsGame\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",

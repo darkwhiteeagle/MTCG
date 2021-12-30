@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace MonsterTradingCardsGame
-{
-    class User
-    {
+using Colorful;
+using System.Drawing;
+using Console = Colorful.Console;
+
+namespace MonsterTradingCardsGame {
+    class User {
         public static string username;
         public static int coins { get; set; }
         public static int elo { get; set; }
         public static int playedGames { get; set; }
         private string password { get; set; }
 
-        public bool RegisterUser()
-        {
+        public bool RegisterUser() {
             Database db = Database.GetConn();
             bool containsLetter = false;
 
@@ -24,7 +25,7 @@ namespace MonsterTradingCardsGame
                 username = Console.ReadLine();
                 containsLetter = Regex.IsMatch(username, "[a-zA-Z]");
                 if (!containsLetter || username.Length < 5)
-                    Console.WriteLine("Username must contain letters and be longer than 5 Letters, try again");
+                    Console.WriteLine("Username must contain letters and be longer than 5 Letters, try again", Color.DarkRed);
             }
             containsLetter = false;
             Console.WriteLine("Enter Password:");
@@ -33,26 +34,24 @@ namespace MonsterTradingCardsGame
                 password = ReadPassword();
                 containsLetter = Regex.IsMatch(password, "[a-zA-Z0-9]");
                 if (!containsLetter || password.Length < 7)
-                    Console.WriteLine("Password must contain at leat\n a capital letter\n a small letter\n a number and be at least 7 Letters, try again");
-
+                    Console.WriteLine("Password must contain at leat\n a capital letter\n a small letter\n a number and be at least 7 Letters, try again", Color.DarkRed);
             }
             elo = 100;
             coins = 20;
             playedGames = 0;
             if (db.RegisterUser(username, password, elo, coins, playedGames))
             {
-                Console.WriteLine("Successfully registered!");
+                Console.WriteLine("Successfully registered!", Color.DarkGreen);
                 AuthToken auth = new AuthToken();       //constuctor creates new AUTH Token
                 return true;
             }
             else
             {
-                Console.WriteLine("Something went wrong, try again!");
+                Console.WriteLine("Something went wrong, try again!", Color.Red);
                 return false;
             }
         }
-        public bool LoginUser()
-        {
+        public bool LoginUser() {
             Database db = Database.GetConn();
             Console.WriteLine("Enter username:");
             username = Console.ReadLine();
@@ -61,18 +60,17 @@ namespace MonsterTradingCardsGame
 
             if (db.LoginUser(username, password))
             {
-                Console.WriteLine("Successfully logged in!");
+                Console.WriteLine("Successfully logged in!", Color.Green);
                 AuthToken auth = new AuthToken();       //constuctor creates new AUTH Token
                 return true;
             }
             else
             {
-                Console.WriteLine("Something went wrong, try again!");
+                Console.WriteLine("Something went wrong, try again!", Color.Red);
                 return false;
             }
         }
-        private static string ReadPassword()
-        {
+        private static string ReadPassword() {
             string password = "";
             ConsoleKeyInfo info = Console.ReadKey(true);
             while (info.Key != ConsoleKey.Enter)
@@ -104,8 +102,7 @@ namespace MonsterTradingCardsGame
             Console.WriteLine();
             return password;
         }
-        public static void LogoutUser()
-        {
+        public static void LogoutUser() {
             //code
         }
     }
