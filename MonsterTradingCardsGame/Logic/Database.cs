@@ -28,7 +28,7 @@ namespace MonsterTradingCardsGame {
             _conn.Close();
             return true;
         }
-
+        //Administration Database entries
         public bool RegisterUser(string username, string password, int elo, int coins, int played_games) {
             Open();
 
@@ -70,7 +70,6 @@ namespace MonsterTradingCardsGame {
         }
         public bool LoginUser(string username, string password) {
             Open();
-
             NpgsqlCommand checkSalt = new NpgsqlCommand("SELECT salt FROM player WHERE username = @username;", _conn);
             checkSalt.Parameters.AddWithValue("username", username);
             Object salt = checkSalt.ExecuteScalar();
@@ -98,7 +97,7 @@ namespace MonsterTradingCardsGame {
             Close();
             return false;
         }
-
+        //Getting Data from Database with Npgsql
         public void GetUserInfo() {
             Open();
             NpgsqlCommand cmd = new NpgsqlCommand("SELECT username, elo, coins, played_games FROM player WHERE username = @username;", _conn);
@@ -158,7 +157,7 @@ namespace MonsterTradingCardsGame {
             }
             Close();
         }
-
+        //Update Database entries
         public void UpdatePlayedGames() {
 
             Open();
@@ -187,6 +186,7 @@ namespace MonsterTradingCardsGame {
             Close();
 
         }
+        //Database entry manipulation
         public void InsertCard(int id) {
             Open();
             NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO cardstack (id, username) VALUES (@id,@username);", _conn);

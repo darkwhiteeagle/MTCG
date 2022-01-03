@@ -10,7 +10,7 @@ namespace MonsterTradingCardsGame {
         public static int stackSize = 27;
 
         public Stack() { }
-
+        //Prints all user Cards in formatted table
         public static void PrintStack() {
             if (userCards.Count > 0)
             {

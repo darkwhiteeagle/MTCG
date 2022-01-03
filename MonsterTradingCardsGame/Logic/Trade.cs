@@ -16,7 +16,7 @@ namespace MonsterTradingCardsGame {
             tradeList.Clear();
             tradeInfo.Clear();
         }
-
+        //User can buy, sell or go back
         public static void TradeMenu() {
             int input;
             Console.WriteLine("Do you want to buy or sell a card (1 or 2)\n1.Buy\n2.Sell\n3.Return");
@@ -35,6 +35,7 @@ namespace MonsterTradingCardsGame {
                     break;
             }
         }
+        //The cards on the market will be listed and user can choose one
         private static void TradeBuy() {
             string input;
             int num;
@@ -76,7 +77,7 @@ namespace MonsterTradingCardsGame {
             tradeList.Clear();
             tradeInfo.Clear();
         }
-
+        //User can choose a card from his deck and offer it for some coins
         private static void TradeSell() {
             string input;
             int card, coins;

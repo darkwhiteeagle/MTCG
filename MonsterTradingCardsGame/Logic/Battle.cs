@@ -24,8 +24,8 @@ namespace MonsterTradingCardsGame {
             userDeck.Clear();
             botDeck.Clear();
         }
+        //Constructor chooses 4 random cards for the component
         public Battle() {
-            //Bot choosing random Cards for Component
             for (int i = 0; i < deckSize; i++)
             {
                 int choiceBot = RandomCard(9);
@@ -35,6 +35,7 @@ namespace MonsterTradingCardsGame {
                 botDeck[i] = Stack.cardList[choiceBot];
             }
         }
+        //User chooses 4 cards from his cardstack
         private void ChooseCards() {
             int choice;
             string[] count = new string[] { "first", "second", "third", "fourth" };
@@ -51,6 +52,7 @@ namespace MonsterTradingCardsGame {
                 Stack.userCards.Remove(userDeck[i]);
             }
         }
+        //Prints the current Bot and User Deck
         public void PrintDecks() {
             Console.WriteLine("\nYour Deck:");
             foreach (Card card in userDeck)
@@ -64,7 +66,7 @@ namespace MonsterTradingCardsGame {
                 card.PrintCard();
             }
         }
-
+        //Here the battle starts and they fight automatically
         public void StartBattle() {
             if (Stack.userCards.Count > 3)
             {
@@ -89,6 +91,7 @@ namespace MonsterTradingCardsGame {
                 Console.WriteLine("You have to have at least 4 cards to play", Color.DarkRed);
             }
         }
+        //Some Monsters and Spells have different behavior to each other
         private void Specialties(int x, int y) {
             if ((userDeck[x].name == "Goblin" && botDeck[y].name == "Dragon") ||
                 (userDeck[x].name == "Dragon" && botDeck[y].name == "Goblin"))
@@ -125,6 +128,31 @@ namespace MonsterTradingCardsGame {
                     CompareElemntType(x, y);
             }
         }
+        /*Not every element type is equally strong, this function validate following table
+        water -> fire
+        fire -> normal
+        normal -> water*/
+        private void CompareElemntType(int x, int y) {
+            int[] arr = new int[2];
+
+            //water VS fire, fire VS normal, normal VS water
+            if ((userDeck[x].etype.Equals(water) && botDeck[y].etype.Equals(fire)) ||
+                (userDeck[x].etype.Equals(fire) && botDeck[y].etype.Equals(normal)) ||
+                (userDeck[x].etype.Equals(normal) && botDeck[y].etype.Equals(water)))
+            {
+                arr = DoubleDamage(x, y);
+            }
+            //fire VS water, normal VS fire, water VS normal
+            if ((userDeck[x].etype.Equals(fire) && botDeck[y].etype.Equals(water)) ||
+                (userDeck[x].etype.Equals(normal) && botDeck[y].etype.Equals(fire)) ||
+                (userDeck[x].etype.Equals(water) && botDeck[y].etype.Equals(normal)))
+            {
+                arr = HalfDamage(x, y);
+            }
+            CompareDamage(x, y, arr[0], arr[1]);
+        }
+        //After validation of specialties and element type,the damage will be compared
+        //and the card will be transferred from bot to the user or otherwise
         private void CompareDamage(int x, int y, int xDamage, int yDamage) {
             Console.WriteLine($"{xDamage} VS {yDamage}");
             if (xDamage > yDamage)
@@ -146,26 +174,7 @@ namespace MonsterTradingCardsGame {
                 Console.WriteLine("Both Card Damage are equal : No changes");
             }
         }
-        private void CompareElemntType(int x, int y) {
-            int[] arr = new int[2];
-
-            //water VS fire, fire VS normal, normal VS water
-            if ((userDeck[x].etype.Equals(water) && botDeck[y].etype.Equals(fire)) ||
-                (userDeck[x].etype.Equals(fire) && botDeck[y].etype.Equals(normal)) ||
-                (userDeck[x].etype.Equals(normal) && botDeck[y].etype.Equals(water)))
-            {
-                arr = DoubleDamage(x, y);
-            }
-            //fire VS water, normal VS fire, water VS normal
-            if ((userDeck[x].etype.Equals(fire) && botDeck[y].etype.Equals(water)) ||
-                (userDeck[x].etype.Equals(normal) && botDeck[y].etype.Equals(fire)) ||
-                (userDeck[x].etype.Equals(water) && botDeck[y].etype.Equals(normal)))
-            {
-                arr = HalfDamage(x, y);
-            }
-            CompareDamage(x, y, arr[0], arr[1]);
-        }
-
+        //Calculation to half the Damage
         private int[] HalfDamage(int x, int y)         //water VS fire, fire VS normal, normal VS water
         {
             int[] xy = new int[2];
@@ -176,6 +185,7 @@ namespace MonsterTradingCardsGame {
             xy[1] = (int)Math.Round(var, MidpointRounding.AwayFromZero);
             return xy;
         }
+        //Calculation to double the Damage
         private int[] DoubleDamage(int x, int y)         //fire VS water, normal VS fire, water VS normal
         {
             int[] xy = new int[2];
@@ -186,12 +196,12 @@ namespace MonsterTradingCardsGame {
             xy[1] = (int)Math.Round(var, MidpointRounding.AwayFromZero);
             return xy;
         }
-
+        //Returns a int from 0 to given number
         private int RandomCard(int curSize) {
             Random rnd = new Random();
             return rnd.Next(0, curSize);
         }
-
+        //Counts user and bot cards to check if game ended
         private bool CountCards(int i) {
             if (((userDeck.Count < botDeck.Count) && i > 99) || userDeck.Count == 0)
             {

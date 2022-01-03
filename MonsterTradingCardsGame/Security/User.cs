@@ -13,12 +13,13 @@ namespace MonsterTradingCardsGame {
         public static int coins { get; set; }
         public static int elo { get; set; }
         public static int playedGames { get; set; }
-
+        //Asks for Credentials and provide them further
         public bool NewUser() {
             string name = NewUsername();
             string pwd = NewPassword();
             if (RegisterUser(name, pwd)) return true; else return false;
         }
+        //Makes calls a database function to create new user
         public bool RegisterUser(string name, string pwd) {
             Database db = Database.GetConn();
             elo = 100;
@@ -36,6 +37,7 @@ namespace MonsterTradingCardsGame {
                 return false;
             }
         }
+        //Validate username input
         private string NewUsername() {
             string name = null;
             bool containsLetter = false;
@@ -49,6 +51,7 @@ namespace MonsterTradingCardsGame {
             }
             return name;
         }
+        //Validate passwort input
         private string NewPassword() {
             string pwd = null;
             bool containsLetter = false;
@@ -62,6 +65,7 @@ namespace MonsterTradingCardsGame {
             }
             return pwd;
         }
+        //Ask for user credentials
         public bool LoginUser() {
             string pwd, name;
             Console.WriteLine("Enter username:");
@@ -70,6 +74,7 @@ namespace MonsterTradingCardsGame {
             pwd = ReadPassword();
             if (AttemptLogin(name, pwd)) return true; else return false;
         }
+        //Check if right username and password stored in DB
         public bool AttemptLogin(string name, string pwd) {
             Database db = Database.GetConn();
             if (db.LoginUser(name, pwd))
@@ -84,6 +89,7 @@ namespace MonsterTradingCardsGame {
                 return false;
             }
         }
+        //Hides Password while writing it
         private static string ReadPassword() {
             string password = "";
             ConsoleKeyInfo info = Console.ReadKey(true);

@@ -14,6 +14,7 @@ namespace MonsterTradingCardsGame {
             AsciiText();
             StartMenu();
         }
+        //This menu always shows at the begining or when the user logs out
         public static void StartMenu() {
             User user = new User();
             int c;
@@ -41,7 +42,7 @@ namespace MonsterTradingCardsGame {
             }
 
         }
-
+        //After the login the user will be redirected to the game menu
         static void GameMenu() {
             int c;
             Stack.userCards.Clear();
@@ -87,6 +88,7 @@ namespace MonsterTradingCardsGame {
                     break;
             }
         }
+        //Validate the input, int has to be between min and max
         static int CheckInput(int min, int max) {
             string input = Console.ReadLine();
             int c;
@@ -97,11 +99,11 @@ namespace MonsterTradingCardsGame {
             }
             return c;
         }
+        //Colored Ascii title 
         static void AsciiText() {
             Console.WriteAscii("Monster Trading", Color.FromArgb(67, 144, 198));
             Console.WriteAscii("  Cards Game", Color.FromArgb(131, 184, 214));
             Console.WriteLine();
-
         }
     }
 }
