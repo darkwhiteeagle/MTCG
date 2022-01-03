@@ -11,7 +11,7 @@ using Console = Colorful.Console;
 
 
 namespace MonsterTradingCardsGame {
-    class Database {
+    public class Database {
         private static Database _DB = new Database();
         private static NpgsqlConnection _conn = new NpgsqlConnection("Host=localhost;Username=terry;Password=Brooklyn99;Database=mtcg");
 
@@ -20,13 +20,13 @@ namespace MonsterTradingCardsGame {
         public static Database GetConn() {
             return _DB;
         }
-        public int Open() {
+        public bool Open() {
             _conn.Open();
-            return 0;
+            return true;
         }
-        public int Close() {
+        public bool Close() {
             _conn.Close();
-            return 0;
+            return true;
         }
 
         public bool RegisterUser(string username, string password, int elo, int coins, int played_games) {
@@ -60,16 +60,14 @@ namespace MonsterTradingCardsGame {
                 cmdInsert.Parameters.AddWithValue("coins", coins);
                 cmdInsert.Parameters.AddWithValue("played_games", played_games);
                 cmdInsert.Parameters.AddWithValue("salt", salt);
-
-
                 cmdInsert.ExecuteReader();
                 Close();
+                User.username = username;
                 return true;
             }
             Close();
             return false;
         }
-
         public bool LoginUser(string username, string password) {
             Open();
 
@@ -92,6 +90,7 @@ namespace MonsterTradingCardsGame {
                 if (hashed == (string)dbPassowrd)
                 {
                     Close();
+                    User.username = username;
                     GetUserInfo();
                     return true;
                 }
@@ -183,7 +182,7 @@ namespace MonsterTradingCardsGame {
             Open();
             NpgsqlCommand cmd = new NpgsqlCommand("UPDATE player SET coins = coins + @coins WHERE username = @username;", _conn);
             cmd.Parameters.AddWithValue("username", User.username);
-            cmd.Parameters.AddWithValue("elo", User.coins);
+            cmd.Parameters.AddWithValue("coins", coins);
             Object res = cmd.ExecuteScalar();
             Close();
 
@@ -196,13 +195,12 @@ namespace MonsterTradingCardsGame {
             Object res = cmd.ExecuteScalar();
             Close();
         }
-        public void DeleteCard(int id) {
+        public void DeleteCard(int id, string username) {
             Open();
-            NpgsqlCommand cmd = new NpgsqlCommand("DELETE FROM cardstack WHERE id IN " +
-                "( SELECT id FROM cardstack WHERE id = @id AND username = @username LIMIT 1);", _conn);
+            NpgsqlCommand cmd = new NpgsqlCommand("DELETE FROM cardstack WHERE id = @id AND username = @username;", _conn);
             cmd.Parameters.AddWithValue("id", id);
-            cmd.Parameters.AddWithValue("username", User.username);
-            Object res = cmd.ExecuteScalar();
+            cmd.Parameters.AddWithValue("username", username);
+            cmd.ExecuteScalar();
             Close();
         }
         public void GetPackage() {
@@ -217,19 +215,9 @@ namespace MonsterTradingCardsGame {
                 Close();
                 InsertCard(cardId);
             }
-            ChangeCoinValue(-5);
-        }
-
-        public void ChangeCoinValue(int val) {
-            Open();
-            NpgsqlCommand cmd = new NpgsqlCommand("UPDATE player SET coins = coins + @val WHERE username = @username;", _conn);
-            cmd.Parameters.AddWithValue("val", val);
-            cmd.Parameters.AddWithValue("username", User.username);
-            Object res = cmd.ExecuteScalar();
-            Close();
+            UpdateCoins(-5);
         }
         public void BuyCard(int id, int coins, string username) {
-
             Open();
             NpgsqlCommand cmd = new NpgsqlCommand("DELETE FROM trade WHERE id = @id AND coins = @coins AND username = @username;", _conn);
             cmd.Parameters.AddWithValue("id", id);
@@ -240,10 +228,10 @@ namespace MonsterTradingCardsGame {
             InsertCard(id);
             if (username == User.username)
                 coins = 0;
-            ChangeCoinValue(-coins);
+            UpdateCoins(-coins);
         }
         public void SellCard(int id, int coins) {
-            DeleteCard(id);
+            DeleteCard(id, User.username);
             Open();
             NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO trade VALUES(@id,@coins,@username);", _conn);
             cmd.Parameters.AddWithValue("id", id);
@@ -251,6 +239,21 @@ namespace MonsterTradingCardsGame {
             cmd.Parameters.AddWithValue("username", User.username);
             Object res = cmd.ExecuteScalar();
             Close();
+        }
+        public bool DeleteUser(string username) {
+            int rows;
+            Open();
+            NpgsqlCommand cmd = new NpgsqlCommand("DELETE FROM trade WHERE username = @username;" +
+                "DELETE FROM cardstack WHERE username = @username; " +
+                "DELETE FROM player WHERE username = @username; ", _conn);
+            cmd.Parameters.AddWithValue("username", username);
+            //cmd.ExecuteScalar();
+            rows = cmd.ExecuteNonQuery();
+            Close();
+            if (rows > 0)
+                return true;
+
+            return false;
         }
     }
 

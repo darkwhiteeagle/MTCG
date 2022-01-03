@@ -35,12 +35,12 @@ namespace MonsterTradingCardsGame {
                 botDeck[i] = Stack.cardList[choiceBot];
             }
         }
-        public void ChooseCards() {
+        private void ChooseCards() {
             int choice;
             string[] count = new string[] { "first", "second", "third", "fourth" };
             for (int i = 0; i < deckSize; i++)
             {
-                Console.WriteLine($"\nPlease choose your {count[i]} Card ");
+                Console.WriteLine($"\nPlease choose your {count[i]} Card");
                 string input = Console.ReadLine(); //   || choice < 0 || choice >= Stack.stackSize
                 while (!Int32.TryParse(input, out choice) || !Stack.userCards.Contains(Stack.cardList.Find(x => x.id == choice)))
                 {
@@ -136,7 +136,7 @@ namespace MonsterTradingCardsGame {
             }
             else if (xDamage < yDamage)
             {
-                Database.GetConn().DeleteCard(userDeck[x].id);
+                Database.GetConn().DeleteCard(userDeck[x].id, User.username);
                 botDeck.Add(userDeck[x]);
                 userDeck.Remove(userDeck[x]);
                 Console.WriteLine("You lost this round : Card transfered to Opponent");

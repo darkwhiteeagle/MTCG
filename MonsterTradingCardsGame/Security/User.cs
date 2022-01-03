@@ -8,38 +8,23 @@ using System.Drawing;
 using Console = Colorful.Console;
 
 namespace MonsterTradingCardsGame {
-    class User {
+    public class User {
         public static string username;
         public static int coins { get; set; }
         public static int elo { get; set; }
         public static int playedGames { get; set; }
-        private string password { get; set; }
 
-        public bool RegisterUser() {
+        public bool NewUser() {
+            string name = NewUsername();
+            string pwd = NewPassword();
+            if (RegisterUser(name, pwd)) return true; else return false;
+        }
+        public bool RegisterUser(string name, string pwd) {
             Database db = Database.GetConn();
-            bool containsLetter = false;
-
-            Console.WriteLine("Enter username:");
-            while (containsLetter == false || username.Length < 5)
-            {
-                username = Console.ReadLine();
-                containsLetter = Regex.IsMatch(username, "[a-zA-Z]");
-                if (!containsLetter || username.Length < 5)
-                    Console.WriteLine("Username must contain letters and be longer than 5 Letters, try again", Color.DarkRed);
-            }
-            containsLetter = false;
-            Console.WriteLine("Enter Password:");
-            while (containsLetter == false || password.Length < 7)
-            {
-                password = ReadPassword();
-                containsLetter = Regex.IsMatch(password, "[a-zA-Z0-9]");
-                if (!containsLetter || password.Length < 7)
-                    Console.WriteLine("Password must contain at leat\n a capital letter\n a small letter\n a number and be at least 7 Letters, try again", Color.DarkRed);
-            }
             elo = 100;
             coins = 20;
             playedGames = 0;
-            if (db.RegisterUser(username, password, elo, coins, playedGames))
+            if (db.RegisterUser(name, pwd, elo, coins, playedGames))
             {
                 Console.WriteLine("Successfully registered!", Color.DarkGreen);
                 AuthToken auth = new AuthToken();       //constuctor creates new AUTH Token
@@ -51,14 +36,43 @@ namespace MonsterTradingCardsGame {
                 return false;
             }
         }
-        public bool LoginUser() {
-            Database db = Database.GetConn();
+        private string NewUsername() {
+            string name = null;
+            bool containsLetter = false;
             Console.WriteLine("Enter username:");
-            username = Console.ReadLine();
+            while (containsLetter == false || name.Length < 5)
+            {
+                name = Console.ReadLine();
+                containsLetter = Regex.IsMatch(name, "[a-zA-Z]");
+                if (!containsLetter || name.Length < 5)
+                    Console.WriteLine("Username must contain letters and be longer than 5 Letters, try again", Color.DarkRed);
+            }
+            return name;
+        }
+        private string NewPassword() {
+            string pwd = null;
+            bool containsLetter = false;
+            Console.WriteLine("Enter Password:");
+            while (containsLetter == false || pwd.Length < 7)
+            {
+                pwd = ReadPassword();
+                containsLetter = Regex.IsMatch(pwd, "[a-zA-Z0-9]");
+                if (!containsLetter || pwd.Length < 7)
+                    Console.WriteLine("Password must contain at leat\n a capital letter\n a small letter\n a number and be at least 7 Letters, try again", Color.DarkRed);
+            }
+            return pwd;
+        }
+        public bool LoginUser() {
+            string pwd, name;
+            Console.WriteLine("Enter username:");
+            name = Console.ReadLine();
             Console.WriteLine("Enter password:");
-            password = ReadPassword();
-
-            if (db.LoginUser(username, password))
+            pwd = ReadPassword();
+            if (AttemptLogin(name, pwd)) return true; else return false;
+        }
+        public bool AttemptLogin(string name, string pwd) {
+            Database db = Database.GetConn();
+            if (db.LoginUser(name, pwd))
             {
                 Console.WriteLine("Successfully logged in!", Color.Green);
                 AuthToken auth = new AuthToken();       //constuctor creates new AUTH Token
@@ -103,6 +117,10 @@ namespace MonsterTradingCardsGame {
             return password;
         }
         public static void LogoutUser() {
+            username = null;
+            elo = 0;
+            coins = 0;
+            playedGames = 0;
             //code
         }
     }

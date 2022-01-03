@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace MonsterTradingCardsGame {
-    class Card {
+    public class Card {
         public string name;
         public int damage { get; set; }
         public int id;

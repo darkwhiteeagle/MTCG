@@ -4,12 +4,12 @@ using System.Text;
 using System.Linq;              //Concat()
 
 namespace MonsterTradingCardsGame {
-    class AuthToken {
+    public class AuthToken {
         private static string token;
         public AuthToken() {
             createToken();
         }
-        private void createToken() {
+        public static void createToken() {
             //GUID: Globally Unique Identifier ist eine Zahl mit 128 Bit
             byte[] time = BitConverter.GetBytes(DateTime.UtcNow.ToBinary());
             byte[] key = Guid.NewGuid().ToByteArray();

@@ -7,14 +7,14 @@ using System.Drawing;
 using Console = Colorful.Console;
 
 namespace MonsterTradingCardsGame {
-    class Program {
+    public class Program {
 
         static void Main(string[] args) {
             //Farbiger Game Titel
             AsciiText();
             StartMenu();
         }
-        static void StartMenu() {
+        public static void StartMenu() {
             User user = new User();
             int c;
             Console.WriteLine("Please choose by entering a number:");
@@ -30,7 +30,7 @@ namespace MonsterTradingCardsGame {
             }
             if (c == 2)
             {
-                if (user.RegisterUser())
+                if (user.NewUser())
                     GameMenu();
                 else
                     StartMenu();
