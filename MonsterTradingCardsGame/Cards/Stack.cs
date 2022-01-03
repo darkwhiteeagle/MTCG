@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace MonsterTradingCardsGame {
-    class Stack {
+    public class Stack {
         public static List<Card> cardList = new List<Card>();
         public static List<Card> userCards = new List<Card>();
 
         public static int stackSize = 27;
 
         public Stack() { }
-
+        //Prints all user Cards in formatted table
         public static void PrintStack() {
             if (userCards.Count > 0)
             {

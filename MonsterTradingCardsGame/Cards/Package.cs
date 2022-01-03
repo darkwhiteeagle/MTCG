@@ -5,7 +5,7 @@ using System.Text;
 namespace MonsterTradingCardsGame {
     class Package {
         public Package() { }
-
+        //Purchase 4 random cards for 5 coins 
         public static void BuyPackage() {
             char chr;
             Console.WriteLine("One package includes 4 random cards and costs 5 coins.\n" +

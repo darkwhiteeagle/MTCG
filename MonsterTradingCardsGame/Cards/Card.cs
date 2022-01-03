@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace MonsterTradingCardsGame {
-    class Card {
+    public class Card {
         public string name;
         public int damage { get; set; }
         public int id;
@@ -22,7 +22,7 @@ namespace MonsterTradingCardsGame {
             this.etype = etype;
             this.ctype = ctype;
         }
-
+        //Prints then card stats in a formatted string
         public void PrintCard() {
             string printthis = String.Format("|{0,-3}|{1,-12}|{2,-6}|{3,-7}|{4,-7}|", id, name, damage, etype, ctype);
             Console.WriteLine(printthis);
