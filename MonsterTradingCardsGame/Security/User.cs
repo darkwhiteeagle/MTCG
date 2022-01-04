@@ -127,7 +127,7 @@ namespace MonsterTradingCardsGame {
             elo = 0;
             coins = 0;
             playedGames = 0;
-            //code
+            AuthToken.deleteToken();
         }
     }
 }

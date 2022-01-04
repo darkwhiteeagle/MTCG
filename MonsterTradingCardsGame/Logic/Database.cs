@@ -159,87 +159,107 @@ namespace MonsterTradingCardsGame {
         }
         //Update Database entries
         public void UpdatePlayedGames() {
-
-            Open();
-            NpgsqlCommand cmd = new NpgsqlCommand("UPDATE player SET played_games = played_games + 1 WHERE username = @username;", _conn);
-            cmd.Parameters.AddWithValue("username", User.username);
-            Object res = cmd.ExecuteScalar();
-            Close();
-
+            if (AuthToken.checkToken())
+            {
+                Open();
+                NpgsqlCommand cmd = new NpgsqlCommand("UPDATE player SET played_games = played_games + 1 WHERE username = @username;", _conn);
+                cmd.Parameters.AddWithValue("username", User.username);
+                Object res = cmd.ExecuteScalar();
+                Close();
+            }
         }
         public void UpdateElo(int elo) {
-
-            Open();
-            NpgsqlCommand cmd = new NpgsqlCommand("UPDATE player SET elo = elo + @elo WHERE username = @username;", _conn);
-            cmd.Parameters.AddWithValue("username", User.username);
-            cmd.Parameters.AddWithValue("elo", elo);
-            Object res = cmd.ExecuteScalar();
-            Close();
-
+            if (AuthToken.checkToken())
+            {
+                Open();
+                NpgsqlCommand cmd = new NpgsqlCommand("UPDATE player SET elo = elo + @elo WHERE username = @username;", _conn);
+                cmd.Parameters.AddWithValue("username", User.username);
+                cmd.Parameters.AddWithValue("elo", elo);
+                Object res = cmd.ExecuteScalar();
+                Close();
+            }
         }
         public void UpdateCoins(int coins) {
-            Open();
-            NpgsqlCommand cmd = new NpgsqlCommand("UPDATE player SET coins = coins + @coins WHERE username = @username;", _conn);
-            cmd.Parameters.AddWithValue("username", User.username);
-            cmd.Parameters.AddWithValue("coins", coins);
-            Object res = cmd.ExecuteScalar();
-            Close();
-
+            if (AuthToken.checkToken())
+            {
+                Open();
+                NpgsqlCommand cmd = new NpgsqlCommand("UPDATE player SET coins = coins + @coins WHERE username = @username;", _conn);
+                cmd.Parameters.AddWithValue("username", User.username);
+                cmd.Parameters.AddWithValue("coins", coins);
+                Object res = cmd.ExecuteScalar();
+                Close();
+            }
         }
         //Database entry manipulation
         public void InsertCard(int id) {
-            Open();
-            NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO cardstack (id, username) VALUES (@id,@username);", _conn);
-            cmd.Parameters.AddWithValue("id", id);
-            cmd.Parameters.AddWithValue("username", User.username);
-            Object res = cmd.ExecuteScalar();
-            Close();
-        }
-        public void DeleteCard(int id, string username) {
-            Open();
-            NpgsqlCommand cmd = new NpgsqlCommand("DELETE FROM cardstack WHERE id = @id AND username = @username;", _conn);
-            cmd.Parameters.AddWithValue("id", id);
-            cmd.Parameters.AddWithValue("username", username);
-            cmd.ExecuteScalar();
-            Close();
-        }
-        public void GetPackage() {
-            Random random = new Random();
-            for (int i = 0; i < 5; i++)
+            if (AuthToken.checkToken())
             {
                 Open();
-                int num = random.Next(0, Stack.stackSize - 1);
-                NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM card WHERE id = @id;", _conn);
-                cmd.Parameters.AddWithValue("id", num);
-                int cardId = (int)cmd.ExecuteScalar();
+                NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO cardstack (id, username) VALUES (@id,@username);", _conn);
+                cmd.Parameters.AddWithValue("id", id);
+                cmd.Parameters.AddWithValue("username", User.username);
+                Object res = cmd.ExecuteScalar();
                 Close();
-                InsertCard(cardId);
             }
-            UpdateCoins(-5);
+        }
+        public void DeleteCard(int id, string username) {
+            if (AuthToken.checkToken())
+            {
+                Open();
+                NpgsqlCommand cmd = new NpgsqlCommand("DELETE FROM cardstack WHERE id = @id AND username = @username;", _conn);
+                cmd.Parameters.AddWithValue("id", id);
+                cmd.Parameters.AddWithValue("username", username);
+                cmd.ExecuteScalar();
+                Close();
+            }
+        }
+        public void GetPackage() {
+            if (AuthToken.checkToken())
+            {
+                Random random = new Random();
+                for (int i = 0; i < 5; i++)
+                {
+                    Open();
+                    int num = random.Next(0, Stack.stackSize - 1);
+                    NpgsqlCommand cmd = new NpgsqlCommand("SELECT * FROM card WHERE id = @id;", _conn);
+                    cmd.Parameters.AddWithValue("id", num);
+                    int cardId = (int)cmd.ExecuteScalar();
+                    Close();
+                    InsertCard(cardId);
+                }
+                UpdateCoins(-5);
+            }
         }
         public void BuyCard(int id, int coins, string username) {
-            Open();
-            NpgsqlCommand cmd = new NpgsqlCommand("DELETE FROM trade WHERE id = @id AND coins = @coins AND username = @username;", _conn);
-            cmd.Parameters.AddWithValue("id", id);
-            cmd.Parameters.AddWithValue("coins", coins);
-            cmd.Parameters.AddWithValue("username", username);
-            Object res = cmd.ExecuteScalar();
-            Close();
-            InsertCard(id);
-            if (username == User.username)
-                coins = 0;
-            UpdateCoins(-coins);
+            if (AuthToken.checkToken())
+            {
+                Open();
+                NpgsqlCommand cmd = new NpgsqlCommand("DELETE FROM trade WHERE id = @id AND coins = @coins AND username = @username;", _conn);
+                cmd.Parameters.AddWithValue("id", id);
+                cmd.Parameters.AddWithValue("coins", coins);
+                cmd.Parameters.AddWithValue("username", username);
+                Object res = cmd.ExecuteScalar();
+                Close();
+                InsertCard(id);
+                if (username == User.username)
+                    coins = 0;
+                UpdateCoins(-coins);
+            }
         }
         public void SellCard(int id, int coins) {
-            DeleteCard(id, User.username);
-            Open();
-            NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO trade VALUES(@id,@coins,@username);", _conn);
-            cmd.Parameters.AddWithValue("id", id);
-            cmd.Parameters.AddWithValue("coins", coins);
-            cmd.Parameters.AddWithValue("username", User.username);
-            Object res = cmd.ExecuteScalar();
-            Close();
+            if (AuthToken.checkToken())
+            {
+                DeleteCard(id, User.username);
+                Open();
+                NpgsqlCommand cmd = new NpgsqlCommand("INSERT INTO trade VALUES(@id,@coins,@username);", _conn);
+                cmd.Parameters.AddWithValue("id", id);
+                cmd.Parameters.AddWithValue("coins", coins);
+                cmd.Parameters.AddWithValue("username", User.username);
+                Object res = cmd.ExecuteScalar();
+                Close();
+            }
         }
+        //DeleteUser: Only for debug and test
         public bool DeleteUser(string username) {
             int rows;
             Open();

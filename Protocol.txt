@@ -1,0 +1,115 @@
+              __  ___                  __                  ______                 __   _
+             /  |/  / ___   ___   ___ / /_ ___   ____     /_  __/  ____ ___ _ ___/ /  (_)  ___   ___ _
+            / /|_/ / / _ \ / _ \ (_-</ __// -_) / __/      / /    / __// _ `// _  /  / /  / _ \ / _ `/
+           /_/  /_/  \___//_//_//___/\__/ \__/ /_/        /_/    /_/   \_,_/ \_,_/  /_/  /_//_/ \_, /
+                                                                                               /___/
+                           _____                 __            _____
+                          / ___/ ___ _  ____ ___/ /  ___      / ___/ ___ _  __ _  ___
+                         / /__  / _ `/ / __// _  /  (_-<     / (_ / / _ `/ /  ' \/ -_)
+                         \___/  \_,_/ /_/   \_,_/  /___/     \___/  \_,_/ /_/_/_/\__/
+
+Monster Trading Cards Game : Protocol
+================Setup================
+
+This project is written in the object-oriented programming language C# 
+As development environment Visual Studio 2019 was chosen. 
+The database management system PostgreSQL was used for the database 
+and additionally connected to the VS extension 
+"Npgsql PostgreSQL Integration" and visualized as a model.
+
+==============Github-Link============
+
+https://github.com/darkwhiteeagle/MTCG
+
+#Collaborator ivitation necessary
+#Send me your Github username at if20b150@technikum-wien.at
+
+=============Difficulties============
+
+My biggest hurdle was at the beginning, I was still unsure how the cards 
+and the deck of cards should be structured. 
+Ultimately, i chose lists for the deck of cards. 
+In C#, lists are very easy to use and come with useful out-of-the-box functions.
+
+=============Unit-Tests==============
+
+NUnit Framework was used for unit testing. 
+I covered two areas with unit tests: 
+Authentication Tests (Regiser, Login, AUTH-Token) and Database Tests (SQL-DB Manipulation).
+For the other areas, no unit tests were necessary 
+or no unit tests were taken into account in the Battle Logic and developed at an early stage.
+
+Why the tested code is critical?
+They save you hours of debugging. When you have tests that your code needs to pass, 
+you're preventing bugs from creeping through. 
+You won't be able to finish a task on your list until you write code that passes the test.
+
+==============Time-Spent============
+
+    Part       | Time     
+---------------+-------
+ research      | 5
+ cards         | 6 
+ battle logic  | 15             
+ database      | 10             
+ authentication| 5
+ unit tests    | 5
+ protocol      | 2
+
+These values are time estimates only and have not been accurately calculated.
+You have to note that C# is a new programming language for me 
+and that learning by doing also takes some time. Sum = 38h
+
+============Database-Model===========
+
+#Table »player«
+    Colum     |          Type         | NULL allowed?
+--------------+-----------------------+--------------
+ username     | character varying(20) | not null 
+ password     | text                  | not null      
+ elo          | integer               | not null      
+ coins        | integer               | 
+ played_games | integer               |
+ salt         | bytea                 | not null 
+Indexes:
+    "player_pkey" PRIMARY KEY, btree (username)
+Foreign key references from:
+    TABLE "cardstack" CONSTRAINT "cardstack_username_fkey" FOREIGN KEY (username) REFERENCES player(username)
+    TABLE "trade" CONSTRAINT "trade_username_fkey" FOREIGN KEY (username) REFERENCES player(username)
+
+
+#Table »card«
+   Colum |          Type          | NULL allowed?
+---------+------------------------+--------------
+ id      | integer                | not null      
+ name    | character varying(255) | not null      
+ damage  | integer                | not null      
+ element | character varying(255) | not null      
+ type    | character varying(255) | not null      
+Indexes:
+    "card_pkey" PRIMARY KEY, btree (id)
+Foreign key references from:
+    TABLE "cardstack" CONSTRAINT "cardstack_id_fkey" FOREIGN KEY (id) REFERENCES card(id)
+    TABLE "trade" CONSTRAINT "trade_id_fkey" FOREIGN KEY (id) REFERENCES card(id)
+
+
+#Table »cardstack«
+  Column  |          Type          | NULL allowed?
+----------+-----------------------+--------------
+ id       | integer               | not null      
+ username | character varying(20) | not null      
+Foreign key constraints:
+    "cardstack_id_fkey" FOREIGN KEY (id) REFERENCES card(id)
+    "cardstack_username_fkey" FOREIGN KEY (username) REFERENCES player(username)
+	
+
+Table »trade«
+  Column  |          Type          | NULL erlaubt? 
+----------+------------------------+---------------
+ id       | integer                | not null      
+ coins    | integer                | not null      
+ username | character varying(255) | not null      
+Fremdschlüssel-Constraints:
+    "trade_id_fkey" FOREIGN KEY (id) REFERENCES card(id)
+    "trade_username_fkey" FOREIGN KEY (username) REFERENCES player(username)
+
